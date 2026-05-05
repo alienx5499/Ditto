@@ -1,0 +1,28 @@
+# Secrets
+gcp.json
+.env
+.env.local
+*.key
+*.pem
+
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+
+# Build artifacts
+dist/
+coverage/
+*.tsbuildinfo
+
+# Runtime / logs
+.ditto/
+*.log
+
+# Generated outputs
+output/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+!.vscode/extensions.json

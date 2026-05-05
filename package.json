@@ -1,0 +1,72 @@
+{
+  "name": "ditto-cli",
+  "version": "0.1.0",
+  "description": "Ditto - a conversational CLI agent that clones websites using Vertex AI Gemini.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "ditto": "bin/ditto.ts"
+  },
+  "scripts": {
+    "dev": "tsx bin/ditto.ts",
+    "start": "tsx bin/ditto.ts",
+    "doctor": "tsx bin/ditto.ts doctor",
+    "clone": "tsx bin/ditto.ts clone",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:cov": "vitest run --coverage",
+    "prepare": "husky || true"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.2.1",
+    "axios": "^1.7.9",
+    "boxen": "^8.0.1",
+    "chalk": "^5.3.0",
+    "cheerio": "^1.2.0",
+    "dotenv": "^16.4.7",
+    "figlet": "^1.8.0",
+    "google-auth-library": "^9.15.0",
+    "gradient-string": "^3.0.0",
+    "ora": "^8.1.1",
+    "pino": "^9.5.0",
+    "pino-pretty": "^13.0.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@types/figlet": "^1.7.0",
+    "@types/gradient-string": "^1.1.6",
+    "@types/node": "^22.10.5",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "@vitest/coverage-v8": "^2.1.8",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.3.0",
+    "prettier": "^3.4.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.19.1",
+    "vitest": "^2.1.8"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}
