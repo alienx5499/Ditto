@@ -167,7 +167,7 @@ export class VertexGeminiProvider implements ILLMProvider {
     try {
       data = raw ? JSON.parse(raw) : null;
     } catch {
-      data = null;
+      // Ignore JSON parse failures; we still include raw response in error.
     }
     if (!res.ok) {
       throw new ProviderError(`HTTP ${res.status} from ${model}: ${truncate(raw, 600)}`, {

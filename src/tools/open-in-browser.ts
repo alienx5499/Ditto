@@ -50,7 +50,11 @@ export const openInBrowserTool: ToolDescriptor<unknown, OpenInBrowserResult> = {
       cmd = 'xdg-open';
       args = [target];
     }
-    spawn(cmd, args, { detached: true, stdio: 'ignore' }).unref();
+    const child = spawn(cmd, args, { detached: true, stdio: 'ignore' });
+    // In headless CI containers (e.g. act), opener binaries may not exist.
+    // Swallow async spawn errors to avoid unhandled exceptions.
+    child.on('error', () => undefined);
+    child.unref();
     return { path: target, opened: true };
   },
 };

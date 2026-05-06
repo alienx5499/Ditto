@@ -7,7 +7,6 @@ gcp.json
 
 # Dependencies
 node_modules/
-pnpm-lock.yaml
 
 # Build artifacts
 dist/
