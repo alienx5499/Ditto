@@ -50,7 +50,7 @@ describe('loadConfig', () => {
     const cfg = loadConfig();
     expect(cfg.projectId).toBe('my-project');
     expect(cfg.location).toBe('global');
-    expect(cfg.primaryModel).toBe('gemini-3.1-flash-lite-preview');
+    expect(cfg.primaryModel).toBe('gemini-3.1-pro');
     expect(cfg.fallbackModels.length).toBeGreaterThan(0);
     expect(cfg.budgetMs).toBeGreaterThan(0);
   });
