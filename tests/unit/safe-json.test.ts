@@ -21,6 +21,12 @@ describe('parseLlmJson', () => {
     expect(parseLlmJson(raw)).toEqual({ step: 'START', content: 'hi' });
   });
 
+  it('extracts first valid JSON object when multiple are present', () => {
+    const raw =
+      'I will think first.\n{"step":"THINK","content":"plan"}\n{"step":"TOOL","tool_name":"x","tool_args":{}}';
+    expect(parseLlmJson(raw)).toEqual({ step: 'THINK', content: 'plan' });
+  });
+
   it('throws ParseError on empty input', () => {
     expect(() => parseLlmJson('   ')).toThrow(ParseError);
   });

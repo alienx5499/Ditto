@@ -2,6 +2,55 @@ import { ParseError } from '../errors/index.js';
 
 const FENCE_RE = /^```(?:json)?\s*([\s\S]*?)\s*```$/i;
 
+function extractBalancedJsonObjects(input: string): string[] {
+  const out: string[] = [];
+  let depth = 0;
+  let start = -1;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = 0; i < input.length; i += 1) {
+    const ch = input[i];
+
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (ch === '\\') {
+        escaped = true;
+        continue;
+      }
+      if (ch === '"') {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (ch === '"') {
+      inString = true;
+      continue;
+    }
+
+    if (ch === '{') {
+      if (depth === 0) start = i;
+      depth += 1;
+      continue;
+    }
+
+    if (ch === '}') {
+      if (depth === 0) continue;
+      depth -= 1;
+      if (depth === 0 && start !== -1) {
+        out.push(input.slice(start, i + 1));
+        start = -1;
+      }
+    }
+  }
+
+  return out;
+}
+
 /**
  * Tolerant JSON extraction for LLM output.
  *
@@ -34,8 +83,10 @@ export function parseLlmJson<T = unknown>(raw: string): T {
     candidates.push(trimmed.slice(firstBrace, lastBrace + 1));
   }
 
+  candidates.push(...extractBalancedJsonObjects(trimmed));
+
   let lastError: unknown;
-  for (const candidate of candidates) {
+  for (const candidate of new Set(candidates)) {
     try {
       return JSON.parse(candidate) as T;
     } catch (error) {
