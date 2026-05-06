@@ -98,4 +98,18 @@ describe('Agent end-to-end', () => {
     const output = await agent.runTurn('test');
     expect(output).toBe('fine');
   });
+
+  it('recovers after repeated malformed JSON without crashing the turn', async () => {
+    const provider = new CannedProvider([
+      'not json',
+      'still not json',
+      '```text\nnot json\n```',
+      JSON.stringify({ step: 'THINK', content: 'recovered format' }),
+      JSON.stringify({ step: 'OUTPUT', content: 'done after recovery' }),
+    ]);
+    const registry = createDefaultRegistry();
+    const agent = new Agent({ provider, registry, systemPrompt: 'SYSTEM', config });
+    const output = await agent.runTurn('test malformed recovery');
+    expect(output).toBe('done after recovery');
+  });
 });

@@ -13,6 +13,7 @@ import type { ToolRegistry } from '../tools/registry.js';
 
 const MAX_ITERATIONS = 80;
 const MAX_PARSE_RETRIES = 2;
+const MAX_PARSE_HARD_RECOVERIES = 6;
 
 export interface AgentDeps {
   provider: ILLMProvider;
@@ -68,6 +69,7 @@ export class Agent {
 
     try {
       let parseRetries = 0;
+      let parseHardRecoveries = 0;
       for (let i = 0; i < MAX_ITERATIONS; i += 1) {
         if (combinedSignal.aborted) {
           return 'Stopped: budget or user abort.';
@@ -110,7 +112,24 @@ export class Agent {
               JSON.stringify({
                 step: 'OBSERVE',
                 content:
-                  'Your last response was not valid single-step JSON. Re-emit ONE valid step JSON object only.',
+                  'Your last response was not valid single-step JSON. Re-emit ONE valid step JSON object only. Do not include markdown or prose.',
+              }),
+            );
+            continue;
+          }
+          if (err instanceof ParseError && parseHardRecoveries < MAX_PARSE_HARD_RECOVERIES) {
+            parseHardRecoveries += 1;
+            parseRetries = 0;
+            logger.warn(
+              { traceId, hardRecovery: parseHardRecoveries },
+              'parse hard-recovery triggered',
+            );
+            this.conversation.pushAssistant(providerResult.text);
+            this.conversation.pushDeveloper(
+              JSON.stringify({
+                step: 'OBSERVE',
+                content:
+                  'STRICT MODE: Reply with exactly one JSON object only. Allowed shapes: {"step":"START","content":"..."} | {"step":"THINK","content":"..."} | {"step":"TOOL","tool_name":"...","tool_args":...} | {"step":"OUTPUT","content":"..."}. No extra text.',
               }),
             );
             continue;
